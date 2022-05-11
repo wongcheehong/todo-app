@@ -27,7 +27,6 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
 
     const countDownTo = moment(timer.countDownTo, 'DD/MM/YYYY h:mm:ss A');
     const timeLeft = countDownTo.diff(moment(), 'seconds');
-    console.log(timer.attempt);
     if (timeLeft <= 0) {
       const attempt = timer.attempt + 1;
       const updateInfo = {
@@ -43,24 +42,19 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
             .add(60, 'seconds')
             .format('DD/MM/YYYY h:mm:ss A');
         }
-        updateTimer(timer.id, updateInfo).then(updatedTimer => {
-          console.log('work', updatedTimer);
-          setTimer(updatedTimer);
-        });
         setStatus('Break');
       } else if (status === 'Break') {
         updateInfo.countDownTo = moment()
           .add(10, 'seconds')
           .format('DD/MM/YYYY h:mm:ss A');
-        updateTimer(timer.id, updateInfo).then(updatedTimer => {
-          console.log('break', updatedTimer)
-          setTimer(updatedTimer);
-        });
         setStatus('Working');
       }
+
+      updateTimer(timer.id, updateInfo).then(updatedTimer => {
+        setTimer(updatedTimer);
+      });
     }
 
-    console.log('outside');
     const minutes = timeLeft / 60;
     const seconds = timeLeft % 60;
     return `${zeroPad(minutes.toFixed(0), 2)}:${zeroPad(
