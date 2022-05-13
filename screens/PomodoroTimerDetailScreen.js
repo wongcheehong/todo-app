@@ -23,11 +23,11 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
     if (createMode) {
       return '25:00';
     }
-    const zeroPad = (num, places) => String(num).padStart(places, '0');
 
     const countDownTo = moment(timer.countDownTo, 'DD/MM/YYYY h:mm:ss A');
-    const timeLeft = countDownTo.diff(moment(), 'seconds');
+    let timeLeft = countDownTo.diff(moment(), 'seconds');
     if (timeLeft <= 0) {
+      timeLeft = 0;
       const attempt = timer.attempt + 1;
       const updateInfo = {
         attempt,
@@ -35,33 +35,44 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
       if (status === 'Working') {
         if (attempt % 5 === 0) {
           updateInfo.countDownTo = moment()
-            .add(20, 'seconds')
+            .add(22, 'seconds')
             .format('DD/MM/YYYY h:mm:ss A');
         } else {
           updateInfo.countDownTo = moment()
-            .add(60, 'seconds')
+            .add(7, 'seconds')
             .format('DD/MM/YYYY h:mm:ss A');
         }
-        setStatus('Break');
       } else if (status === 'Break') {
         updateInfo.countDownTo = moment()
-          .add(10, 'seconds')
+          .add(12, 'seconds')
           .format('DD/MM/YYYY h:mm:ss A');
-        setStatus('Working');
       }
 
       updateTimer(timer.id, updateInfo).then(updatedTimer => {
         setTimer(updatedTimer);
+        setStatus(status === 'Working' ? 'Break' : 'Working');
       });
     }
 
-    const minutes = timeLeft / 60;
-    const seconds = timeLeft % 60;
+    return timeLeft;
+    // const zeroPad = (num, places) => String(num).padStart(places, '0');
+    // const minutes = parseInt(timeLeft / 60, 10);
+    // const seconds = timeLeft % 60;
+    // return `${zeroPad(minutes.toFixed(0), 2)}:${zeroPad(
+    //   seconds.toFixed(0),
+    //   2,
+    // )}`;
+  }, [createMode, status, timer]);
+
+  const formatTime = time => {
+    const zeroPad = (num, places) => String(num).padStart(places, '0');
+    const minutes = parseInt(time / 60, 10);
+    const seconds = time % 60;
     return `${zeroPad(minutes.toFixed(0), 2)}:${zeroPad(
       seconds.toFixed(0),
       2,
     )}`;
-  }, [createMode, status, timer]);
+  };
 
   const [timerText, setTimerText] = useState(calculateTimeLeft());
 
@@ -71,9 +82,10 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
     }
 
     let intervalID;
+    setTimerText(formatTime(calculateTimeLeft()));
     if (status === 'Working' || status === 'Break') {
       intervalID = setInterval(() => {
-        setTimerText(calculateTimeLeft());
+        setTimerText(formatTime(calculateTimeLeft()));
       }, 1000);
     }
 
@@ -104,10 +116,12 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
         setButtonText('Stop');
         break;
       case 'Working':
+        await updateTimer(timer.id, {status: 'Failed'});
         setStatus('Failed');
         setButtonText('End');
         break;
       case 'Break':
+        await updateTimer(timer.id, {status: 'End'});
         setStatus('End');
         setButtonText('End');
         break;

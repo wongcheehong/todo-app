@@ -4,6 +4,23 @@ import moment from 'moment';
 
 const STORAGE_KEY = '@timer_list';
 
+const findTimers = async date => {
+  try {
+    const timers = await readTimers();
+    const filteredTimers = timers.filter(timer => {
+      const createdAt = moment(timer.createdAt, 'DD/MM/YYYY h:mm:ss A');
+      if (date === createdAt.format('DD/MM/YYYY')) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    return filteredTimers;
+  } catch (e) {
+    console.log('Failed to fetch todos from storage');
+  }
+};
+
 const readTimers = async () => {
   try {
     let timers = await AsyncStorage.getItem(STORAGE_KEY);
@@ -21,7 +38,7 @@ const writeTimer = async () => {
       status: 'Working',
       attempt: 0,
       createdAt: moment().format('DD/MM/YYYY h:mm:ss A'),
-      countDownTo: moment().add(5, 'seconds').format('DD/MM/YYYY h:mm:ss A'),
+      countDownTo: moment().add(12, 'seconds').format('DD/MM/YYYY h:mm:ss A'),
     };
     let timers = await readTimers();
     timers.push(timer);
@@ -66,4 +83,4 @@ const updateTimer = async (id, updateInfo) => {
   }
 };
 
-export {readTimers, writeTimer, readTimer, updateTimer};
+export {readTimers, writeTimer, readTimer, updateTimer, findTimers};

@@ -10,7 +10,9 @@ import PomodoroTimerDetailScreen from './screens/PomodoroTimerDetailScreen';
 import LoginScreen from './screens/LoginScreen';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FoundationIcon from 'react-native-vector-icons/Foundation';
 import LoginContextProvider, {LoginContext} from './context/LoginContext';
+import StatisticsScreen from './screens/StatisticsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,7 +65,7 @@ const App = () => {
   return (
     <LoginContextProvider>
       <NavigationContainer>
-        <Tab.Navigator>
+        <Tab.Navigator initialRouteName="stats">
           <Tab.Screen
             name="HomeTab"
             component={HomeStack}
@@ -77,7 +79,7 @@ const App = () => {
             }}
           />
           <Tab.Screen
-            name="Second"
+            name="pomodoro"
             component={PomodoroTimerStack}
             options={{
               headerShown: false,
@@ -85,6 +87,17 @@ const App = () => {
               tabBarLabel: 'Pomodoro',
               tabBarIcon: ({color, size}) => (
                 <MaterialCommunityIcon name="timer" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="stats"
+            component={StatisticsScreen}
+            options={{
+              title: 'Statistics',
+              tabBarLabel: 'Statistics',
+              tabBarIcon: ({color, size}) => (
+                <FoundationIcon name="graph-bar" size={size} color={color} />
               ),
             }}
           />

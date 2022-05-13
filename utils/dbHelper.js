@@ -4,6 +4,23 @@ import moment from 'moment';
 
 const STORAGE_KEY = '@todo_list';
 
+const findTodos = async date => {
+  try {
+    const todos = await readTodos();
+    const filteredTodos = todos.filter(todo => {
+      const createdAt = moment(todo.createdAt, 'DD/MM/YYYY h:mm:ss A');
+      if (date === createdAt.format('DD/MM/YYYY')) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    return filteredTodos;
+  } catch (e) {
+    console.log('Failed to fetch todos from storage');
+  }
+};
+
 const readTodos = async () => {
   try {
     let todos = await AsyncStorage.getItem(STORAGE_KEY);
@@ -15,7 +32,7 @@ const readTodos = async () => {
       return [];
     }
   } catch (e) {
-    console.log('Failed to fetch the input from storage');
+    console.log('Failed to fetch the todos from storage');
   }
 };
 
@@ -167,6 +184,7 @@ const checkSubTask = async (todoId, subTaskId) => {
 };
 
 export {
+  findTodos,
   readTodos,
   readTodo,
   storeTodos,
