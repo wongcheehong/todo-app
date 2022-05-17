@@ -1,7 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, StyleSheet, SafeAreaView, Pressable} from 'react-native';
-import {updateTimer, writeTimer} from '../utils/timerDbHelper';
+import {
+  writeTimer,
+  updateTimer as updateTimerHelper,
+} from '../utils/timerDbHelper';
 import moment from 'moment';
+import {useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from '../state/index';
 
 const PomodoroTimerDetailScreen = ({route, navigation}) => {
   const [createMode, setCreateMode] = useState(route.params.createMode);
@@ -10,6 +16,9 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
       return route.params.item;
     }
   });
+  const dispatch = useDispatch();
+
+  const {updateTimer, addTimer} = bindActionCreators(actionCreators, dispatch);
 
   const [status, setStatus] = useState(() => {
     if (createMode) {
@@ -48,20 +57,15 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
           .format('DD/MM/YYYY h:mm:ss A');
       }
 
-      updateTimer(timer.id, updateInfo).then(updatedTimer => {
+      // dispatch(updateTimer(timer.id, updateInfo));
+      // setStatus(status === 'Working' ? 'Break' : 'Working');
+      updateTimerHelper(timer.id, updateInfo).then(updatedTimer => {
         setTimer(updatedTimer);
         setStatus(status === 'Working' ? 'Break' : 'Working');
       });
     }
 
     return timeLeft;
-    // const zeroPad = (num, places) => String(num).padStart(places, '0');
-    // const minutes = parseInt(timeLeft / 60, 10);
-    // const seconds = timeLeft % 60;
-    // return `${zeroPad(minutes.toFixed(0), 2)}:${zeroPad(
-    //   seconds.toFixed(0),
-    //   2,
-    // )}`;
   }, [createMode, status, timer]);
 
   const formatTime = time => {
@@ -110,18 +114,21 @@ const PomodoroTimerDetailScreen = ({route, navigation}) => {
     switch (status) {
       case 'Not Started':
         const timerObj = await writeTimer();
+        addTimer(timerObj);
         setTimer(timerObj);
         setStatus('Working');
         setCreateMode(false);
         setButtonText('Stop');
         break;
       case 'Working':
-        await updateTimer(timer.id, {status: 'Failed'});
+        // await updateTimer(timer.id, {status: 'Failed'});
+        dispatch(updateTimer(timer.id, {status: 'Failed'}));
         setStatus('Failed');
         setButtonText('End');
         break;
       case 'Break':
-        await updateTimer(timer.id, {status: 'End'});
+        // await updateTimer(timer.id, {status: 'End'});
+        dispatch(updateTimer(timer.id, {status: 'End'}));
         setStatus('End');
         setButtonText('End');
         break;

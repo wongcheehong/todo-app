@@ -10,9 +10,19 @@ import PomodoroTimerDetailScreen from './screens/PomodoroTimerDetailScreen';
 import LoginScreen from './screens/LoginScreen';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FoundationIcon from 'react-native-vector-icons/Foundation';
 import LoginContextProvider, {LoginContext} from './context/LoginContext';
 import StatisticsScreen from './screens/StatisticsScreen';
+import {Provider} from 'react-redux';
+import {store} from './state/store';
+import ProductsScreen from './screens/Products/ProductsScreen';
+import ProductDetailsScreen from './screens/Products/ProductDetailsScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import {useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from './state/index';
+import {readTimers} from './utils/timerDbHelper';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,49 +71,92 @@ function PomodoroTimerStack() {
   );
 }
 
+function ProductsStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Marketplace" component={ProductsScreen} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailsScreen}
+        options={{title: 'Product Detail'}}
+      />
+    </Stack.Navigator>
+  );
+}
+
 const App = () => {
   return (
-    <LoginContextProvider>
-      <NavigationContainer>
-        <Tab.Navigator initialRouteName="stats">
-          <Tab.Screen
-            name="HomeTab"
-            component={HomeStack}
-            options={{
-              headerShown: false,
-              title: 'Todos',
-              tabBarLabel: 'Home',
-              tabBarIcon: ({color, size}) => (
-                <AntDesignIcon name="home" size={size} color={color} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="pomodoro"
-            component={PomodoroTimerStack}
-            options={{
-              headerShown: false,
-              title: 'Pomodoro Timer',
-              tabBarLabel: 'Pomodoro',
-              tabBarIcon: ({color, size}) => (
-                <MaterialCommunityIcon name="timer" size={size} color={color} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="stats"
-            component={StatisticsScreen}
-            options={{
-              title: 'Statistics',
-              tabBarLabel: 'Statistics',
-              tabBarIcon: ({color, size}) => (
-                <FoundationIcon name="graph-bar" size={size} color={color} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </LoginContextProvider>
+    <Provider store={store}>
+      <LoginContextProvider>
+        <NavigationContainer>
+          <Tab.Navigator initialRouteName="HomeTab">
+            <Tab.Screen
+              name="HomeTab"
+              component={HomeStack}
+              options={{
+                headerShown: false,
+                title: 'Todos',
+                tabBarLabel: 'Home',
+                tabBarIcon: ({color, size}) => (
+                  <AntDesignIcon name="home" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="pomodoro"
+              component={PomodoroTimerStack}
+              options={{
+                headerShown: false,
+                title: 'Pomodoro Timer',
+                tabBarLabel: 'Pomodoro',
+                tabBarIcon: ({color, size}) => (
+                  <MaterialCommunityIcon
+                    name="timer"
+                    size={size}
+                    color={color}
+                  />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="stats"
+              component={StatisticsScreen}
+              options={{
+                title: 'Statistics',
+                tabBarLabel: 'Statistics',
+                tabBarIcon: ({color, size}) => (
+                  <FoundationIcon name="graph-bar" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="market"
+              component={ProductsStack}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({color, size}) => (
+                  <FontAwesomeIcon
+                    name="shopping-cart"
+                    size={size}
+                    color={color}
+                  />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="profile"
+              component={ProfileScreen}
+              options={{
+                title: 'Profile',
+                tabBarIcon: ({color, size}) => (
+                  <FontAwesomeIcon name="user" size={size} color={color} />
+                ),
+              }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </LoginContextProvider>
+    </Provider>
   );
 };
 

@@ -1,9 +1,14 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {Text, StyleSheet, Animated} from 'react-native';
 import ActionButtonGroup from '../ActionButtonGroup';
-import {checkTodo} from '../../utils/dbHelper';
+import {useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from '../../state/index';
 
 const TodoItem = ({todo, onEdit, onDelete}) => {
+  const dispatch = useDispatch();
+  const {checkTodo} = bindActionCreators(actionCreators, dispatch);
+
   const swipeAnim = useRef(new Animated.Value(1000)).current;
   const [completed, setCompleted] = useState(todo.completed);
 
@@ -23,8 +28,8 @@ const TodoItem = ({todo, onEdit, onDelete}) => {
     }).start();
     setTimeout(() => onDelete(), 500);
   };
-  const onCheck = async id => {
-    await checkTodo(id);
+  const onCheck = id => {
+    dispatch(checkTodo(id));
     setCompleted(previosuState => !previosuState);
   };
 

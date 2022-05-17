@@ -10,8 +10,11 @@ import {
   LogBox,
 } from 'react-native';
 import TodoItem from '../components/Todo/TodoItemSwipe';
-import {readTodos, storeTodos, deleteTodo, editTodo} from '../utils/dbHelper';
+import {readTodos, deleteTodo} from '../utils/dbHelper';
 import Dialog from 'react-native-dialog';
+import {useSelector, useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from '../state/index';
 
 LogBox.ignoreLogs(['ViewPropTypes will be removed from React Native']);
 
@@ -19,8 +22,16 @@ const Home = ({navigation}) => {
   const [inputValue, setInput] = useState('');
   const [visible, setVisible] = useState(false);
   const [selectedId, setSelectedId] = useState('');
-  const [todos, setTodos] = useState([]);
+  // const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState('');
+
+  const todos = useSelector(state => state.todos);
+  const dispatch = useDispatch();
+
+  const {addTodo, editTodo, setTodos} = bindActionCreators(
+    actionCreators,
+    dispatch,
+  );
 
   useEffect(() => {
     readTodos().then(todosList => {
@@ -32,9 +43,13 @@ const Home = ({navigation}) => {
     setInput(value);
   }
 
-  async function onAdd() {
-    console.log(inputValue);
-    await storeTodos(inputValue, setTodos);
+  function onAdd() {
+    try {
+      dispatch(addTodo(inputValue));
+    } catch (e) {
+      console.log('There is an error adding the data', e);
+    }
+    // await storeTodos(inputValue, setTodos);
     setInput('');
   }
 
@@ -88,12 +103,12 @@ const Home = ({navigation}) => {
     setVisible(false);
   };
 
-  const handleConfirm = async () => {
-    await editTodo(selectedId, newTitle);
+  const handleConfirm = () => {
+    dispatch(editTodo(selectedId, newTitle));
     setVisible(false);
     setNewTitle('');
-    const newTodos = await readTodos();
-    setTodos(newTodos);
+    // const newTodos = await readTodos();
+    // setTodos(newTodos);
   };
 
   return (

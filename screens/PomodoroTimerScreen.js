@@ -8,14 +8,20 @@ import {
   Pressable,
 } from 'react-native';
 import {FAB, Card} from '@rneui/themed';
-import {readTimers, updateTimer} from '../utils/timerDbHelper';
+import {readTimers} from '../utils/timerDbHelper';
+import {useSelector, useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from '../state/index';
 
 const PomodoroTimerScreen = ({navigation}) => {
-  const [timers, setTimers] = useState([]);
+  const timers = useSelector(state => state.timers);
+  const dispatch = useDispatch();
+
+  const {setTimers} = bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     readTimers().then(timerList => setTimers(timerList));
-  });
+  }, []);
 
   const addTimer = async () => {
     // Check if any timer running, if yes do not proceed.
@@ -24,7 +30,7 @@ const PomodoroTimerScreen = ({navigation}) => {
       timer => timer.status === 'Working' || timer.status === 'Break',
     );
     if (timer) {
-      await updateTimer(timer.id, {status: 'End'});
+      // dispatch(updateTimer(timer.id, {status: 'End'}));
       console.log('Timer is already running');
       return;
     }

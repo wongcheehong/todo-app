@@ -51,7 +51,7 @@ const readTodo = async id => {
   }
 };
 
-const storeTodos = async (todoTitle, setTodos) => {
+const storeTodos = async todoTitle => {
   try {
     let todos = await readTodos();
     const todo = {
@@ -64,9 +64,10 @@ const storeTodos = async (todoTitle, setTodos) => {
     };
 
     todos.push(todo);
-    setTodos(todos);
+    // setTodos(todos);
     const jsonValue = JSON.stringify(todos);
     await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+    return todo;
   } catch (e) {
     console.log('There is an error stroing the data', e);
   }
@@ -91,6 +92,7 @@ const editTodo = async (id, newTitle) => {
     todoToBeEdited.updatedAt = moment().format('DD/MM/YYYY h:mm:ss A');
     const jsonValue = JSON.stringify(todos);
     await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+    return todoToBeEdited;
   } catch (e) {
     console.log('There is an error edit the data', e);
   }
@@ -160,6 +162,7 @@ const checkTodo = async todoId => {
     todoToBeEdited.updatedAt = moment().format('DD/MM/YYYY h:mm:ss A');
     const jsonValue = JSON.stringify(todos);
     await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+    return todoToBeEdited;
   } catch (e) {
     console.log('There is an error checking todo', e);
   }

@@ -18,7 +18,7 @@
     "@rneui/base": "^4.0.0-rc.2",
     "@rneui/themed": "^4.0.0-rc.2",
     "moment": "^2.29.3",
-    "react": "17.0.2",
+    "react": "^17.0.2",
     "react-native": "0.68.1",
     "react-native-chart-kit": "^6.12.0",
     "react-native-dialog": "^9.2.1",
@@ -26,12 +26,17 @@
     "react-native-safe-area-context": "^4.2.5",
     "react-native-screens": "^3.13.1",
     "react-native-svg": "^12.3.0",
+    "react-native-timeline-flatlist": "^0.8.0",
     "react-native-uuid": "^2.0.1",
-    "react-native-vector-icons": "^9.1.0"
+    "react-native-vector-icons": "^9.1.0",
+    "react-redux": "^8.0.1",
+    "redux": "^4.2.0",
+    "redux-thunk": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/runtime": "^7.12.5",
+    "@faker-js/faker": "^6.3.1",
     "@react-native-community/eslint-config": "^2.0.0",
     "babel-jest": "^26.6.3",
     "eslint": "^7.32.0",
